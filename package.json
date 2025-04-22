@@ -1,0 +1,20 @@
+{
+  "name": "browser-extensions",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:css": "npx @tailwindcss/cli -i ./assets/src/style.css -o ./assets/css/style.css"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.4",
+    "postcss": "^8.5.3",
+    "tailwind": "^4.0.0"
+  },
+  "dependencies": {
+    "postcss-cli": "^11.0.1"
+  }
+}

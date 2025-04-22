@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- displays site properly based on user's device -->
+	<meta name = "color-scheme" content = "light" />
+
+	<link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon-32x32.png">
+	<link rel = 'stylesheet' href = './assets/css/style.css' />
+  
+	<title>Frontend Mentor | Browser extensions manager UI</title>
+</head>
+<body class = 'light'>
+
+	<header class = 'flex justify-between align-center bg-white radius-medium p-10 shadow-light'>
+		<h1 class = 'm-0 flex align-center'>
+			<img src = './assets/images/logo.svg' id = 'main-logo' alt = 'Logo' height = '40'/>
+		</h1>
+		<button id = 'toggle-dark-mode'>
+			<img src = './assets/images/icon-moon.svg' alt = 'Moon Icon' height= '30' />
+		</button>
+	</header>
+	
+	<aside id = 'sub-head'>
+		<h2 class = 'align-center'>Extensions List</h2>
+
+		<section class = 'radio'>
+			<input type = 'radio' name = 'type' id = 'all' value = 'all' />
+			<label for = 'all'>All</label>
+			
+			<input type = 'radio' name = 'type' id = 'active' value = 'active' />
+			<label for = 'active'>Active</label>
+			
+			<input type = 'radio' name = 'type' id = 'inactive' value = 'inactive' />
+			<label for = 'inactive'>Inactive</label>
+		</section>
+	</aside>
+
+	<ul id = 'extensions'></ul>
+
+  <div class="attribution">
+    <p>Challenge by <a href="https://www.frontendmentor.io?ref=challenge">Frontend Mentor</a>. 
+    Coded by <strong>Loay Ali</strong></p>
+  </div>
+  
+  <script src = './assets/js/main.js'></script>
+</body>
+</html>
