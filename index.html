@@ -12,20 +12,30 @@
 </head>
 <body class = 'light'>
 
-	<header class = 'flex justify-between align-center bg-white radius-medium p-10 shadow-light'>
+	<header class = 'flex justify-between align-center bg-white radius-medium p-10 shadow-light' style = 'position:relative;'>
 		<h1 class = 'm-0 flex align-center'>
 			<img src = './assets/images/logo.svg' id = 'main-logo' alt = 'Logo' height = '40'/>
 		</h1>
-		<button id = 'toggle-dark-mode'>
-			<img src = './assets/images/icon-moon.svg' alt = 'Moon Icon' height= '30' />
-		</button>
+		<div class = 'flex align-center' style = 'background:inherit;'>
+			<button id = 'open-search' class = 'phone-only toggle-search'></button>
+			<div id = 'search-section'>
+				<input type = 'search' id = 'search' />
+				<button class = 'phone-only toggle-search' id = 'close-search'></button>
+			</div>
+			<button id = 'toggle-dark-mode'></button>
+		</div>
 	</header>
 	
 	<aside id = 'sub-head'>
-		<h2 class = 'align-center'>Extensions List</h2>
-
-		<section class = 'radio'>
-			<input type = 'radio' name = 'type' id = 'all' value = 'all' />
+		<h2 class = 'align-center'>Extensions List
+		|
+		<select id = 'sort'>
+			<option value = 'a-z'>A-Z</option>
+			<option value = 'z-a'>Z-A</option>
+		</select></h2>
+		
+		<section class = 'radio' id = 'filter-type'>
+			<input type = 'radio' name = 'type' id = 'all' value = 'all' checked/>
 			<label for = 'all'>All</label>
 			
 			<input type = 'radio' name = 'type' id = 'active' value = 'active' />
@@ -33,11 +43,14 @@
 			
 			<input type = 'radio' name = 'type' id = 'inactive' value = 'inactive' />
 			<label for = 'inactive'>Inactive</label>
+			
+			<input type = 'radio' name = 'type' id = 'store' value = 'store' />
+			<label for = 'store'>Store</label>
 		</section>
 	</aside>
 
 	<ul id = 'extensions'></ul>
-
+	
   <div class="attribution">
     <p>Challenge by <a href="https://www.frontendmentor.io?ref=challenge">Frontend Mentor</a>. 
     Coded by <strong>Loay Ali</strong></p>

@@ -1,4 +1,6 @@
-const data = [
+let store = [];
+
+let data = [
     {
         "logo": "./assets/images/logo-devlens.svg",
         "name": "DevLens",
@@ -73,13 +75,34 @@ const data = [
     }
 ];
 
-document.querySelector('label[for="all"]').onclick = () => { fill(data)};
-document.querySelector('label[for="active"]').onclick = () => { fill(data.filter((val) => { return val.isActive == true;}))};
-document.querySelector('label[for="inactive"]').onclick = () => { fill(data.filter((val) => { return val.isActive == false;}))};
+const searchEle = document.getElementById('search');
 
-function fill(data) {
+document.querySelector('label[for="all"]').onclick = () => {
+	fill(data.filter(val => {
+		return ( searchEle.value == '' ? true:(val.name.search(searchEle.value) != -1) );
+	}));
+};
+
+document.querySelector('label[for="active"]').onclick = () => {
+	fill(data.filter((val) => { return val.isActive == true && (searchEle.value == '' ? true:(val.name.search(searchEle.value) != -1));}));
+};
+
+document.querySelector('label[for="inactive"]').onclick = () => {
+	fill(data.filter((val) => { return val.isActive == false && (searchEle.value == '' ? true:(val.name.search(searchEle.value) != -1));}));
+};
+
+document.querySelector('label[for="store"]').onclick = () => {
+	fill(store,true);
+};
+
+function fill(data,is_store = false) {
 	const extensions_container = document.getElementById("extensions");
 	extensions_container.innerHTML = '';
+	
+	if( data.length == 0 ) {
+		extensions_container.innerHTML = '<i style = "color:#444;">No Results</i>';
+		return;
+	}
 	
 	for( let ext of data ) {
 		
@@ -98,16 +121,32 @@ function fill(data) {
 		const inputs = document.createElement('div');
 		inputs.className = 'inputs';
 		
-		const remove = document.createElement('button');
-		remove.innerHTML = 'Remove';
-		remove.className = 'bg-white shadow-light radius-circle';
-		
-		const toggle = document.createElement('input');
-		toggle.type = 'checkbox';
-		toggle.checked = ext.isActive;
+		if( is_store == false ) {
+			const remove = document.createElement('button');
+			remove.innerHTML = 'Remove';
+			remove.className = 'bg-white shadow-light radius-circle';
+			remove.setAttribute('data-func','remove');
+			remove.onclick = (e) => del(e);
+			
+			const toggle = document.createElement('input');
+			toggle.className = 'toggle-activation';
+			toggle.id = ext.name;
+			toggle.type = 'checkbox';
+			toggle.onclick = toggle_activation;
+			toggle.checked = ext.isActive;
 	
-		inputs.appendChild(remove);
-		inputs.appendChild(toggle);
+			inputs.appendChild(remove);
+			inputs.appendChild(toggle);
+		}else {
+			
+			const download = document.createElement('button');
+			download.innerHTML = 'Download';
+			download.setAttribute('data-func','download');
+			download.className = 'bg-white shadow-light radius-circle';
+			download.onclick = (e) => del(e);
+			
+			inputs.appendChild(download);
+		}
 		
 		ele.appendChild(img);
 		ele.appendChild(title);
@@ -118,11 +157,100 @@ function fill(data) {
 	}
 }
 
+/* Search */
+searchEle.addEventListener('keyup',(e) => {
+	const group = document.querySelector('#filter-type input[type="radio"]:checked').value;
+	const search = e.currentTarget.value;
+	
+	if( search == '' ) {
+		fill(data.filter(val => {
+			return (group == 'all' ? [false,true]:(group == 'active' ? [true]:[false])).indexOf(val.isActive) != -1;
+		}));
+		return;
+	}
+	
+	fill(data.filter(val => {
+		return (group == 'all' ? [false,true]:(group == 'active' ? [true]:[false])).indexOf(val.isActive) != -1 && val.name.search(search) != -1;
+	}));
+});
+
+/* Toggle Activation Per Extension */
+function toggle_activation(e) {
+	let ind = -1;
+	data.map((ele,i) => {
+		if( ele.name == e.currentTarget.id )
+			ind = i;
+	});
+	
+	if( ind != -1 )
+		data[ind].isActive = e.currentTarget.checked;
+
+	const search = searchEle.value;
+	const group = document.querySelector('#filter-type input[type="radio"]:checked').value;
+
+	e.currentTarget.parentElement.parentElement.className = 'is-loading';
+
+	setTimeout(() => {
+		e.target.parentElement.parentElement.className = '';
+		fill(data.filter(val => (group == 'all' ? [false,true]:(group == 'active' ? [true]:[false])).indexOf(val.isActive) != -1 && val.name.search(search) != -1));
+	},1000);
+}
+
+/* Remove ( or Download ) */
+function del(e) {
+	const ele = e.currentTarget.parentElement.parentElement;
+	ele.className = 'is-loading';
+	
+	setTimeout(() => {
+		ele.className = '';
+		ele.remove();
+		
+		if( e.target.dataset.func == 'remove' ) {
+			const db_ele = data.filter(val => val.name == ele.querySelector('strong').innerHTML)[0];
+			data = data.filter(val => val.name != ele.querySelector('strong').innerHTML);
+			store.push(db_ele);
+		}else if( e.target.dataset.func == 'download' ) {
+			const db_ele = store.filter(val => val.name == ele.querySelector('strong').innerHTML)[0];
+			store = store.filter(val => val.name != ele.querySelector('strong').innerHTML);
+			data.push(db_ele);		
+		}
+	},1000);
+}
+
+/* Sortation */
+document.getElementById('sort').onchange = (e) => {
+	if( e.currentTarget.value == 'a-z' ) {
+		data.sort((a,b) => a.name > b.name);
+	}else {
+		data.sort((b,a) => a.name > b.name);	
+	}
+	
+	const search = searchEle.value;
+	const group = document.querySelector('#filter-type input[type="radio"]:checked').value;
+	
+	fill(data.filter(val => (group == 'all' ? [false,true]:(group == 'active' ? [true]:[false])).indexOf(val.isActive) != -1 && val.name.search(search) != -1));
+};
+
+/* Toggle Search Section */
+function toggle_search(e) {
+	if( e.currentTarget.id == 'open-search' ) {
+		document.getElementById('open-search').style.display = 'none';
+		document.getElementById('search-section').style.display = 'flex';
+	}else if( e.currentTarget.id == 'close-search' ) {
+		document.getElementById('open-search').style.display = 'flex';
+		document.getElementById('search-section').style.display = 'none';
+		searchEle.value = '';
+	}
+}
+
+for( ele of document.getElementsByClassName('toggle-search') ) {
+	ele.onclick = toggle_search;
+}
+
 /* Dark | Light Theme */
 document.getElementById('toggle-dark-mode').onclick = (e) => {
 	document.body.className = document.body.className == 'light' ? 'dark':'light';
 	
-	e.currentTarget.querySelector('img').src = document.body.className == 'light' ? './assets/images/icon-moon.svg':'./assets/images/icon-sun.svg';
 	document.getElementById('main-logo').src = document.body.className == 'light' ? './assets/images/logo.svg':'./assets/images/logo-dark.svg';
 };
 
